@@ -74,9 +74,9 @@ def seeing(data,box,cents,pscale):
             f_init = models.Gaussian2D()  # Declare what function you want to fit to your data
             fit_f = fitting.LevMarLSQFitter()  # Declare what fitting function you want to use
             f = fit_f(f_init, x, y, np.array(fitbox))  # Fit the model to your data (box)
-            std = [f.x_stddev[0],f.y_stddev[0]]
+            #std = [f.x_stddev[0],f.y_stddev[0]]
             #see[n] = float((np.mean(std) * 2.355 * pscale)) # multiply of std mean by 2.355 and by conversion coefficient to get seeing
-            see[n] = np.mean([f.x_fwhm, f.y_fwhm])* pscale
+            see[n] = np.mean([f.x_fwhm, f.y_fwhm])*pscale
             if see[n] >20:
                 see[n] = np.nan
     
@@ -87,7 +87,7 @@ max_brightness = 65000 # saturation value (white pixel)
 N = 12 # any multipple of 3 from 6. each image will be divided to N*(N/1.5)
 path = r"D:\Master\LAST"  # image folder path
 os.chdir(path)  # define the path as current directory
-pscale = 1.25  # conversion coefficient of LAST!
+pscale = 1.25  # plate scale of last (arcsec/pixel)
 hdul = fits.open("LAST.0.1_20200822.145204.403_clear__sci_proc_im_000.fits")  # Open image
 data = hdul[0].data  # data = pixel brightness
 background = np.median(data)
@@ -109,6 +109,11 @@ for n in list(range(len(box))):
 plt.imshow(heat)
 plt.clim(0,np.nanmax(see))
 plt.colorbar()
+plt.xlabel('vertical position (pixel)', fontsize = 11)
+plt.ylabel('horizontal position (pixel)',fontsize = 11)
+
+figname = 'fig_tiptilt.pdf'    
+plt.savefig(figname) 
 
 
 # if the error "The fit may be unsuccessful" comes up, check the fit_info, 'message': 
@@ -116,7 +121,7 @@ plt.colorbar()
 #fit_f.fit_info['message']
 """
 # check individualfit - 
-n = 83 # depends on the box you want to check
+n = 0 # depends on the box you want to check
 hb = 30   # half box size of fit to gausian (around brightest pixel)
 yc = int(box[n].index[int(cents[n][0])]) # the real loction of centroid row in original data
 xc = int(box[n].columns[int(cents[n][1])]) # the real location of centroid column in original data
